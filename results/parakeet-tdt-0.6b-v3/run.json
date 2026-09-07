@@ -1,0 +1,75 @@
+{
+  "dialtone": "0.1.0",
+  "model": "C:/Users/lyle/Projects/models/stt/parakeet-tdt-0.6b-v3",
+  "backend": "transformers",
+  "adapter": {
+    "class": "ParakeetForTDT",
+    "decoding": "greedy"
+  },
+  "dtype": "float32",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4060",
+  "torch": "2.11.0+cu128",
+  "transformers": "5.16.1",
+  "python": "3.12.13",
+  "manifest": "manifests\\librispeech-test-clean-200.txt",
+  "manifest_header": "# source=librispeech/test-clean n=200 seed=42 pool=2620",
+  "n": 200,
+  "batch_size": 16,
+  "conditions": {
+    "clean": {
+      "profile": "clean",
+      "steps": []
+    },
+    "g711u": {
+      "profile": "g711u",
+      "steps": [
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    },
+    "pots": {
+      "profile": "pots",
+      "steps": [
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "bandpass",
+          "lo_hz": 300.0,
+          "hi_hz": 3400.0,
+          "order": 4,
+          "type": "butterworth, causal sosfilt"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    }
+  },
+  "started": "2026-09-06T10:57:33+0800"
+}

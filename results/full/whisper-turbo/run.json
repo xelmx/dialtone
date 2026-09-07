@@ -1,0 +1,35 @@
+{
+  "dialtone": "0.1.0",
+  "model": "C:/Users/lyle/Projects/models/stt/whisper-large-v3-turbo",
+  "backend": "transformers.pipeline",
+  "adapter": {
+    "class": "WhisperForConditionalGeneration",
+    "chunk_length_s": 30,
+    "generate_kwargs": {
+      "language": "en",
+      "task": "transcribe"
+    }
+  },
+  "dtype": "float16",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4060",
+  "torch": "2.11.0+cu128",
+  "transformers": "5.16.1",
+  "python": "3.12.13",
+  "manifest": "manifests\\librispeech-test-clean-2620.txt",
+  "manifest_header": "# source=librispeech/test-clean n=2620 seed=42 pool=2620",
+  "n": 2620,
+  "audio_s": 19452.5,
+  "batching": {
+    "max_items": 8,
+    "max_seconds": 80.0,
+    "order": "longest first"
+  },
+  "conditions": {
+    "clean": {
+      "profile": "clean",
+      "steps": []
+    }
+  },
+  "started": "2026-09-06T13:33:16+0800"
+}
