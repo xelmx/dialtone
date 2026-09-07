@@ -88,6 +88,11 @@ uv run dialtone compare results/*/                             # all of them, on
 uv run dialtone inspect results/*/                             # which utterances moved, and why
 ```
 
+`python -m dialtone ...` is equivalent to `dialtone ...` and works where the
+venv's launcher stubs can't run (Windows Smart App Control blocks uv's
+unsigned `.venv/Scripts/*.exe` on some machines; the interpreter itself is
+fine — point `PYTHONPATH` at `src` and `.venv/Lib/site-packages`).
+
 `--model` takes a Hugging Face hub id or a local path; the adapter is picked
 from the checkpoint's `model_type`. `run` is resumable: results are appended
 per utterance, and a restart skips what is already done. `--limit 3` gives a
