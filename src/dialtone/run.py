@@ -130,7 +130,7 @@ def run(
             continue
         print(f"[{cond}] {len(todo)} to do, {len(ids) - len(todo)} already done")
         batches = list(_batches(todo, dur, batch_size, max_batch_seconds))
-        with path.open("a", encoding="utf-8") as fh:
+        with path.open("a", encoding="utf-8", newline="\n") as fh:
             for batch in tqdm(batches, desc=cond, unit="batch"):
                 audios = [degrade.apply(data.load_audio(utts[i]["path"]), cond) for i in batch]
                 t0 = time.perf_counter()
