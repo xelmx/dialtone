@@ -95,6 +95,7 @@ def run(
         print(f"all conditions already complete for {len(ids)} utterances; nothing to load")
         return
     m = models.load(model, dtype=dtype, device=device)
+    pool = degrade.BabblePool.from_index(utts) if degrade.needs_pool(pending) else None
     # An adapter may know its own memory ceilings; never exceed them.
     max_batch_seconds = min(max_batch_seconds, getattr(m, "max_batch_seconds", max_batch_seconds))
     batch_size = min(batch_size, getattr(m, "max_batch_items", batch_size))
@@ -132,7 +133,12 @@ def run(
         batches = list(_batches(todo, dur, batch_size, max_batch_seconds))
         with path.open("a", encoding="utf-8", newline="\n") as fh:
             for batch in tqdm(batches, desc=cond, unit="batch"):
-                audios = [degrade.apply(data.load_audio(utts[i]["path"]), cond) for i in batch]
+                audios = [
+                    degrade.apply(
+                        data.load_audio(utts[i]["path"]), cond, degrade.Context(pool=pool, speaker=utts[i]["speaker"])
+                    )
+                    for i in batch
+                ]
                 t0 = time.perf_counter()
                 hyps = _transcribe(m, audios)
                 dt = time.perf_counter() - t0

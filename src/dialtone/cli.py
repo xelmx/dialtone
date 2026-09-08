@@ -85,11 +85,14 @@ def main(argv: list[str] | None = None) -> None:
 
         utts = data.index(data.fetch(a.data_dir))
         ids = data.read_manifest(a.manifest)[: a.k]
+        conds = a.conditions.split(",")
+        pool = degrade.BabblePool.from_index(utts) if degrade.needs_pool(conds) else None
         a.out.mkdir(parents=True, exist_ok=True)
         for i in ids:
             x = data.load_audio(utts[i]["path"])
-            for cond in a.conditions.split(","):
-                sf.write(a.out / f"{i}.{cond}.wav", degrade.apply(x, cond), data.SR, subtype="PCM_16")
+            ctx = degrade.Context(pool=pool, speaker=utts[i]["speaker"])
+            for cond in conds:
+                sf.write(a.out / f"{i}.{cond}.wav", degrade.apply(x, cond, ctx), data.SR, subtype="PCM_16")
             print(f"{i}: {utts[i]['text']}")
         print(f"wrote {len(ids)} x {a.conditions} to {a.out}/")
 

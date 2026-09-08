@@ -1,11 +1,11 @@
-"""Summarise result directories: one table per model, one table across models."""
+"""Summarise result directories: one table per model, two tables across models."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from . import normalize, score
+from . import degrade, normalize, score
 
 
 def _rows(f: Path, norm) -> dict[str, dict]:
@@ -69,7 +69,9 @@ def summarize(out: Path, normalizer: str = "whisper_en") -> dict:
 
 
 def _order(conds) -> list[str]:
-    return ["clean", *sorted(c for c in conds if c != "clean")]
+    """clean first, then the chain order profiles are defined in, then anything unknown."""
+    known = [c for c in degrade.PROFILES if c in conds]
+    return known + sorted(c for c in conds if c not in degrade.PROFILES)
 
 
 def _gap(r: dict) -> str:
@@ -101,29 +103,30 @@ def as_markdown(s: dict) -> str:
 
 
 def compare(dirs: list[Path], normalizer: str = "whisper_en") -> tuple[dict, str]:
+    """Two tables: WER per condition, then the paired gap vs clean per condition."""
     summaries = {d.name: summarize(d, normalizer) for d in dirs}
     conds = _order({c for s in summaries.values() for c in s["conditions"]})
-    head = (
-        "| model | "
-        + " | ".join(f"{c} WER" for c in conds)
-        + " | "
-        + " | ".join(f"gap {c} (paired 95% CI)" for c in conds[1:])
-        + " | RTF (clean) |"
-    )
-    sep = "|---|" + "---:|" * len(conds) + "---:|" * (len(conds) - 1) + "---:|"
-    lines = [f"normaliser: `{normalizer}`", "", head, sep]
-    for name, s in summaries.items():
-        cells = []
-        for c in conds:
-            r = s["conditions"].get(c)
-            cells.append("—" if r is None else f"{r['wer'] * 100:.2f}% ({r['ci95'][0] * 100:.2f}–{r['ci95'][1] * 100:.2f})")
-        gaps = [("—" if s["conditions"].get(c) is None else _gap(s["conditions"][c])) for c in conds[1:]]
+    n = next(iter(summaries.values()))["n"]
+
+    def cell(s, c):
+        r = s["conditions"].get(c)
+        return "—" if r is None else f"{r['wer'] * 100:.2f}%"
+
+    def rtf(s):
         rc = s["conditions"].get("clean", {}).get("rtf")
-        lines.append(
-            f"| {name} (`{s.get('dtype')}`) | "
-            + " | ".join(cells)
-            + " | "
-            + " | ".join(gaps)
-            + f" | {'—' if rc is None else f'{rc:.3f}'} |"
-        )
+        return "—" if rc is None else f"{rc:.3f}"
+
+    lines = [f"normaliser: `{normalizer}`  n = {n} utterances", "", "**WER by condition**", ""]
+    lines.append("| model | " + " | ".join(conds) + " | RTF (clean) |")
+    lines.append("|---|" + "---:|" * len(conds) + "---:|")
+    for name, s in summaries.items():
+        lines.append(f"| {name} (`{s.get('dtype')}`) | " + " | ".join(cell(s, c) for c in conds) + f" | {rtf(s)} |")
+
+    gaps = [c for c in conds if c != "clean"]
+    lines += ["", "**Gap vs clean, percentage points, paired bootstrap 95% CI** (an interval that excludes 0 means the condition really moved the model)", ""]
+    lines.append("| model | " + " | ".join(gaps) + " |")
+    lines.append("|---|" + "---:|" * len(gaps))
+    for name, s in summaries.items():
+        cells = [("—" if s["conditions"].get(c) is None else _gap(s["conditions"][c])) for c in gaps]
+        lines.append(f"| {name} | " + " | ".join(cells) + " |")
     return summaries, "\n".join(lines) + "\n"

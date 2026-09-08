@@ -1,6 +1,15 @@
 {
   "dialtone": "0.1.0",
   "model": "C:/Users/lyle/Projects/models/stt/whisper-large-v3-turbo",
+  "backend": "transformers.pipeline",
+  "adapter": {
+    "class": "WhisperForConditionalGeneration",
+    "chunk_length_s": 30,
+    "generate_kwargs": {
+      "language": "en",
+      "task": "transcribe"
+    }
+  },
   "dtype": "float16",
   "device": "cuda:0",
   "gpu": "NVIDIA GeForce RTX 4060",
@@ -10,40 +19,46 @@
   "manifest": "manifests\\librispeech-test-clean-200.txt",
   "manifest_header": "# source=librispeech/test-clean n=200 seed=42 pool=2620",
   "n": 200,
-  "batch_size": 16,
-  "generate_kwargs": {
-    "language": "en",
-    "task": "transcribe"
+  "audio_s": 1561.3,
+  "batching": {
+    "max_items": 8,
+    "max_seconds": 80.0,
+    "order": "longest first"
   },
   "conditions": {
-    "clean": {
-      "profile": "clean",
-      "steps": []
-    },
-    "g711u": {
-      "profile": "g711u",
+    "pink10": {
+      "profile": "pink10",
       "steps": [
         {
-          "name": "narrowband",
-          "from_hz": 16000,
-          "to_hz": 8000,
-          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
-        },
-        {
-          "name": "mulaw",
-          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
-        },
-        {
-          "name": "wideband",
-          "from_hz": 8000,
-          "to_hz": 16000,
-          "method": "scipy.signal.resample_poly"
+          "name": "pink",
+          "snr_db": 10.0,
+          "spectrum": "1/f (equal energy per octave)",
+          "seed": "crc32 of the audio bytes"
         }
       ]
     },
-    "pots": {
-      "profile": "pots",
+    "babble10": {
+      "profile": "babble10",
       "steps": [
+        {
+          "name": "babble",
+          "snr_db": 10.0,
+          "talkers": 6,
+          "source": "other-speaker utterances from the same corpus",
+          "seed": "crc32 of the audio bytes"
+        }
+      ]
+    },
+    "pots_babble10": {
+      "profile": "pots_babble10",
+      "steps": [
+        {
+          "name": "babble",
+          "snr_db": 10.0,
+          "talkers": 6,
+          "source": "other-speaker utterances from the same corpus",
+          "seed": "crc32 of the audio bytes"
+        },
         {
           "name": "narrowband",
           "from_hz": 16000,
@@ -68,7 +83,29 @@
           "method": "scipy.signal.resample_poly"
         }
       ]
+    },
+    "opus12": {
+      "profile": "opus12",
+      "steps": [
+        {
+          "name": "opus",
+          "kbps": 12,
+          "cutoff_hz": null,
+          "codec": "libopus via ffmpeg, application=voip, vbr=on, decoded at 16 kHz"
+        }
+      ]
+    },
+    "opus8": {
+      "profile": "opus8",
+      "steps": [
+        {
+          "name": "opus",
+          "kbps": 8,
+          "cutoff_hz": 4000,
+          "codec": "libopus via ffmpeg, application=voip, vbr=on, decoded at 16 kHz"
+        }
+      ]
     }
   },
-  "started": "2026-09-05T14:29:53+0800"
+  "started": "2026-09-08T21:05:48+0800"
 }

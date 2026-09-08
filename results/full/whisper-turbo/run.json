@@ -29,7 +29,136 @@
     "clean": {
       "profile": "clean",
       "steps": []
+    },
+    "g711u": {
+      "profile": "g711u",
+      "steps": [
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    },
+    "pots": {
+      "profile": "pots",
+      "steps": [
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "bandpass",
+          "lo_hz": 300.0,
+          "hi_hz": 3400.0,
+          "order": 4,
+          "type": "butterworth, causal sosfilt"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    },
+    "pink10": {
+      "profile": "pink10",
+      "steps": [
+        {
+          "name": "pink",
+          "snr_db": 10.0,
+          "spectrum": "1/f (equal energy per octave)",
+          "seed": "crc32 of the audio bytes"
+        }
+      ]
+    },
+    "babble10": {
+      "profile": "babble10",
+      "steps": [
+        {
+          "name": "babble",
+          "snr_db": 10.0,
+          "talkers": 6,
+          "source": "other-speaker utterances from the same corpus",
+          "seed": "crc32 of the audio bytes"
+        }
+      ]
+    },
+    "pots_babble10": {
+      "profile": "pots_babble10",
+      "steps": [
+        {
+          "name": "babble",
+          "snr_db": 10.0,
+          "talkers": 6,
+          "source": "other-speaker utterances from the same corpus",
+          "seed": "crc32 of the audio bytes"
+        },
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "bandpass",
+          "lo_hz": 300.0,
+          "hi_hz": 3400.0,
+          "order": 4,
+          "type": "butterworth, causal sosfilt"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    },
+    "opus12": {
+      "profile": "opus12",
+      "steps": [
+        {
+          "name": "opus",
+          "kbps": 12,
+          "cutoff_hz": null,
+          "codec": "libopus via ffmpeg, application=voip, vbr=on, decoded at 16 kHz"
+        }
+      ]
+    },
+    "opus8": {
+      "profile": "opus8",
+      "steps": [
+        {
+          "name": "opus",
+          "kbps": 8,
+          "cutoff_hz": 4000,
+          "codec": "libopus via ffmpeg, application=voip, vbr=on, decoded at 16 kHz"
+        }
+      ]
     }
   },
-  "started": "2026-09-06T13:33:16+0800"
+  "started": "2026-09-08T22:04:56+0800"
 }
