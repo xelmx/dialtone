@@ -1,0 +1,166 @@
+{
+  "name": "whisper-turbo",
+  "model": "C:/Users/lyle/Projects/models/stt/whisper-large-v3-turbo",
+  "dtype": "float16",
+  "normalizer": "whisper_en",
+  "prefixes": {
+    "first": 1.0,
+    "step": 0.5,
+    "eps": 0.1,
+    "n_prefixes": 2983,
+    "prefix_audio_s": 19408.3
+  },
+  "aligner": "qwen3-forced-aligner-0.6b",
+  "notes": [],
+  "conditions": {
+    "clean": {
+      "n": 200,
+      "lag_median_ms": 100.00000000000009,
+      "lag_median_ms_ci95": [
+        99.99999999999964,
+        120.0
+      ],
+      "lag_p90_ms": 439.99999999999994,
+      "lag_p90_ms_ci95": [
+        419.99999999999994,
+        460.5000000000004
+      ],
+      "revisions_per_100": 21.9090478446234,
+      "revisions_per_100_ci95": [
+        16.931531970297293,
+        28.74890413954349
+      ],
+      "revisions_per_100_median": 15.0,
+      "revisions_per_100_median_ci95": [
+        12.5,
+        16.666666666666664
+      ],
+      "unstable_tail": 0.20086237872799137,
+      "unstable_tail_ci95": [
+        0.18073524808222494,
+        0.2228018618075866
+      ],
+      "agree_before_end_s": 0.3581,
+      "agree_before_end_s_ci95": [
+        0.324946875,
+        0.3915012500000001
+      ],
+      "agree_frac": 0.04587261733961877,
+      "agree_frac_ci95": [
+        0.04024713068458995,
+        0.05233747438847315
+      ],
+      "stream_rtf": 0.3741646597663456,
+      "stream_rtf_ci95": [
+        0.35160282213531224,
+        0.4020145341493704
+      ],
+      "audio_expansion": 12.431005328960852,
+      "audio_expansion_ci95": [
+        10.83896388347334,
+        13.981993958209754
+      ],
+      "lag_defined_frac": 0.9848413074372335,
+      "lag_defined_frac_ci95": [
+        0.9787528219124492,
+        0.9895056227126307
+      ],
+      "empty_partials": 1,
+      "exploded_partials": 0,
+      "max_partial_words": 77,
+      "n_empty_final": 0
+    },
+    "pots_babble10": {
+      "n": 200,
+      "lag_median_ms": 159.99999999999991,
+      "lag_median_ms_ci95": [
+        139.99999999999991,
+        160.00000000000014
+      ],
+      "lag_p90_ms": 620.0,
+      "lag_p90_ms_ci95": [
+        540.0,
+        700.0
+      ],
+      "revisions_per_100": 44.304996448022735,
+      "revisions_per_100_ci95": [
+        34.46976016870034,
+        58.39256381673538
+      ],
+      "revisions_per_100_median": 28.888888888888886,
+      "revisions_per_100_median_ci95": [
+        25.0,
+        31.818181818181817
+      ],
+      "unstable_tail": 0.43873517786561267,
+      "unstable_tail_ci95": [
+        0.3457709312582535,
+        0.6158627685287663
+      ],
+      "agree_before_end_s": 0.314725,
+      "agree_before_end_s_ci95": [
+        0.282075,
+        0.34765375
+      ],
+      "agree_frac": 0.040316278950604634,
+      "agree_frac_ci95": [
+        0.03540221866535149,
+        0.04618273729188833
+      ],
+      "stream_rtf": 0.3773530052264808,
+      "stream_rtf_ci95": [
+        0.3506775023938777,
+        0.40610687471929946
+      ],
+      "audio_expansion": 12.431005328960852,
+      "audio_expansion_ci95": [
+        10.83896388347334,
+        13.981993958209754
+      ],
+      "lag_defined_frac": 0.9580866682453232,
+      "lag_defined_frac_ci95": [
+        0.9490321351682458,
+        0.9656197337837439
+      ],
+      "empty_partials": 1,
+      "exploded_partials": 1,
+      "max_partial_words": 148,
+      "n_empty_final": 0
+    }
+  },
+  "deltas_vs_clean": {
+    "pots_babble10": {
+      "n": 200,
+      "lag_median_ms": 59.99999999999983,
+      "lag_median_ms_ci95": [
+        20.000000000000895,
+        60.00000000000027
+      ],
+      "lag_p90_ms": 180.00000000000006,
+      "lag_p90_ms_ci95": [
+        100.00000000000011,
+        260.0000000000003
+      ],
+      "revisions_per_100": 22.395948603399333,
+      "revisions_per_100_ci95": [
+        12.579761074654217,
+        34.9949867710393
+      ],
+      "revisions_per_100_median": 13.888888888888886,
+      "revisions_per_100_median_ci95": [
+        10.291093710211356,
+        17.15112201963534
+      ],
+      "unstable_tail": 0.2378727991376213,
+      "unstable_tail_ci95": [
+        0.1447601335280232,
+        0.4066028943731323
+      ],
+      "agree_before_end_s": -0.043375,
+      "agree_before_end_s_ci95": [
+        -0.08007875,
+        -0.008519374999999956
+      ]
+    }
+  }
+}

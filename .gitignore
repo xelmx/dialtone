@@ -3,9 +3,11 @@ __pycache__/
 *.pyc
 .pytest_cache/
 *.egg-info/
-data/
+data/*
+!data/alignments/
 listen/
 # per-run results are versioned (transcripts + summaries); logs and scratch are not
 results/**/run.log
 results/**/run.err
 results/**/*.bak
+results/**/_*

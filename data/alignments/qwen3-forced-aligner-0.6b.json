@@ -1,0 +1,18 @@
+{
+  "dialtone": "0.1.0",
+  "kind": "align",
+  "aligner": "qwen3-forced-aligner-0.6b",
+  "model": "Qwen/Qwen3-ForcedAligner-0.6B-hf",
+  "info": {
+    "class": "Qwen3ASRForTokenClassification",
+    "language": "English",
+    "segment_ms": 80
+  },
+  "dtype": "bfloat16",
+  "device": "cuda:0",
+  "torch": "2.11.0+cu128",
+  "transformers": "5.16.1",
+  "python": "3.12.13",
+  "manifest": "manifests\\librispeech-test-clean-2620.txt",
+  "started": "2026-09-09T21:35:12+0800"
+}

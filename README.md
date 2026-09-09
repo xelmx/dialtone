@@ -106,6 +106,67 @@ What the numbers say:
 Reproduce: `uv run dialtone compare results/full/*/` and
 `uv run dialtone inspect results/full/*/`; tables in `results/full/`.
 
+## Step 4 — how fast does the transcript settle?
+
+Every number above is batch accuracy: the model hears the whole recording and only
+the final answer is graded. A phone agent hears audio a slice at a time, guesses as
+it goes, and has to commit to "they said X" fast enough to reply without dead air.
+Two models with identical WER can differ badly in how long their transcript keeps
+*changing*. Nobody publishes that. This measures it.
+
+**How — and what it is not.** Each utterance is degraded once in full, then fed as
+growing prefixes `y[:1.0 s], y[:1.5 s], …, y[:T]`, and every prefix is transcribed
+*independently* by the same batch adapter. No state is carried between prefixes and
+no streaming decoder is involved. So this is **simulated** streaming: an upper bound
+on partial quality (each prefix gets full attention over everything heard so far)
+and a gross upper bound on cost (the corpus is re-decoded ~11×). It answers "how much
+does an offline model's answer churn as audio arrives" — the number that decides
+whether you can show partials to a caller.
+
+Reference word timing comes from forced alignment of the *reference* transcript to
+the *clean* audio (`dialtone align`; Qwen3-ForcedAligner-0.6B, 80 ms resolution,
+cached under `data/alignments/`), independent of the models under test.
+
+| metric | definition | what it tells you |
+|---|---|---|
+| stable time | for word *i* of the final transcript, the smallest prefix length after which the word is present (aligned equal) in every later partial | when the model committed to the word for good |
+| emission lag | stable time − true end of the reference word (only for words the model got right); median and p90 | how far the committed transcript trails the speech |
+| revisions | fewest word edits between consecutive partials with appending at the end free, per 100 final words — pooled, and the per-utterance median | how often the model takes back what it said. Includes repairing a word the prefix cut in half, which is inherent to prefix decoding and hits every model alike |
+| exploded partials | partials more than twice as long as the utterance | decoding loops on truncated audio ("a little bit of a little bit of…") — rare, and a few of them dominate the pooled revision rate, which is why the median is shown too |
+| unstable tail | trailing words of a partial that don't survive to the final | how many words behind the cursor can't be trusted yet |
+| agree before end | how long before the audio ends the transcript stopped changing | a lower bound on "done" (real endpointing adds its own delay) |
+| stream RTF | model time over all prefixes ÷ audio | what naive re-decoding costs |
+
+Decisions that move these numbers (see the list further down for the WER ones):
+
+- **Presence is alignment-based, not positional.** If `H_2.0 = "he hoped there"` and
+  `H_2.5 = "and he hoped there would"`, positional comparison says every word
+  changed; the alignment absorbs `and` as one insertion and keeps the rest — which
+  is what someone watching the caption experiences. The same property means a
+  hallucinated 200-word partial only costs the words it genuinely displaced.
+- **Appending is free; revising is not.** Revisions are counted as the fewest edits
+  to turn one partial into the next when new words at the end cost nothing — a
+  definition that does not depend on how an aligner breaks ties between equal-cost
+  paths.
+- **The 0.5 s step quantises every lag to ±0.5 s.** Read the *differences* between
+  models and conditions, not the absolute values.
+- **Degrade, then slice.** Noise is seeded from the whole clip and the SNR is a
+  whole-clip quantity; slicing first would give every prefix a different noise.
+- **Reference times come from a model.** The forced aligner has its own error
+  (80 ms segments); lag inherits it, equally for every model.
+- **One utterance per batch.** Prefixes of different utterances are never mixed, so
+  per-utterance compute is exact, at ~1.5× wall clock on the smaller models.
+
+```sh
+uv run dialtone align  manifests/librispeech-test-clean-2620.txt          # once, ~25 min
+uv run dialtone stream manifests/librispeech-test-clean-2620.txt \
+    --model nvidia/parakeet-tdt-0.6b-v3 --out results/stream/parakeet-tdt-0.6b-v3
+uv run dialtone settle results/stream/*/                                  # the tables
+```
+
+`scripts/run-settle.ps1` runs alignment, all three models on both conditions, and the
+tables, detached — about 8 hours on an RTX 4060; resumable per (utterance, prefix).
+
 ## Run it
 
 ```sh

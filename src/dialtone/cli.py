@@ -61,6 +61,34 @@ def main(argv: list[str] | None = None) -> None:
     i.add_argument("-k", type=int, default=8)
     i.add_argument("--out", type=Path, default=None, help="also write markdown here")
 
+    al = sub.add_parser("align", help="forced-align reference words to the clean audio (cached, resumable)")
+    al.add_argument("manifest", type=Path)
+    al.add_argument("--model", default="Qwen/Qwen3-ForcedAligner-0.6B-hf")
+    al.add_argument("--out", type=Path, default=Path("data/alignments"))
+    al.add_argument("--dtype", choices=["auto", "fp16", "bf16", "fp32"], default="auto")
+    al.add_argument("--device", default=None)
+    al.add_argument("--limit", type=int, default=None)
+    al.add_argument("--print", dest="show", type=int, default=0, help="print word times for the first N (eyeball the aligner)")
+
+    st = sub.add_parser("stream", help="transcribe growing prefixes of each utterance (resumable)")
+    st.add_argument("manifest", type=Path)
+    st.add_argument("--model", default=DEFAULT_MODEL)
+    st.add_argument("--conditions", default="clean,pots_babble10")
+    st.add_argument("--out", type=Path, required=True)
+    st.add_argument("--first", type=float, default=1.0, help="first prefix length, s")
+    st.add_argument("--step", type=float, default=0.5, help="prefix step, s")
+    st.add_argument("--batch-size", type=int, default=16)
+    st.add_argument("--max-batch-seconds", type=float, default=160.0)
+    st.add_argument("--dtype", choices=["auto", "fp16", "bf16", "fp32"], default="auto")
+    st.add_argument("--device", default=None)
+    st.add_argument("--limit", type=int, default=None)
+
+    se = sub.add_parser("settle", help="settle metrics for one or more stream result directories")
+    se.add_argument("dirs", type=Path, nargs="+")
+    se.add_argument("--alignments", type=Path, default=Path("data/alignments/qwen3-forced-aligner-0.6b.jsonl"))
+    se.add_argument("--normalizer", choices=["basic", "whisper_en"], default="whisper_en")
+    se.add_argument("--out", type=Path, default=None, help="default results/stream/settle.<normalizer>.md")
+
     a = ap.parse_args(argv)
 
     if a.cmd == "fetch":
@@ -135,3 +163,36 @@ def main(argv: list[str] | None = None) -> None:
             a.out.parent.mkdir(parents=True, exist_ok=True)
             a.out.write_text(md, encoding="utf-8", newline="\n")
         print(md)
+
+    elif a.cmd == "align":
+        from . import align
+
+        align.build(a.manifest, a.data_dir, out=a.out, model=a.model, dtype=a.dtype, device=a.device, limit=a.limit, show=a.show)
+
+    elif a.cmd == "stream":
+        from . import stream
+
+        stream.run(
+            model=a.model,
+            manifest=a.manifest,
+            conditions=a.conditions.split(","),
+            out=a.out,
+            data_dir=a.data_dir,
+            first=a.first,
+            step=a.step,
+            batch_size=a.batch_size,
+            max_batch_seconds=a.max_batch_seconds,
+            dtype=a.dtype,
+            device=a.device,
+            limit=a.limit,
+        )
+
+    elif a.cmd == "settle":
+        from . import settle
+
+        _, md = settle.compare(a.dirs, a.alignments, normalizer=a.normalizer)
+        out = a.out or Path("results") / "stream" / f"settle.{a.normalizer}.md"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(md, encoding="utf-8", newline="\n")
+        print(md)
+        print(f"wrote {out}")

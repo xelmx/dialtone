@@ -32,11 +32,12 @@ from tqdm import tqdm
 from . import __version__, data, degrade, models
 
 
-def _done(path: Path) -> set[str]:
+def _done(path: Path, key=lambda r: r["id"]) -> set:
+    """Keys of rows already written to a jsonl (default: utterance id)."""
     if not path.exists():
         return set()
     lines = path.read_text(encoding="utf-8").splitlines()
-    return {json.loads(l)["id"] for l in lines if l.strip()}
+    return {key(json.loads(l)) for l in lines if l.strip()}
 
 
 def _batches(ids: list[str], dur: dict[str, float], max_items: int, max_seconds: float) -> Iterator[list[str]]:

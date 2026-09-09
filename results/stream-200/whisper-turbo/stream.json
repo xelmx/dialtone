@@ -1,0 +1,78 @@
+{
+  "dialtone": "0.1.0",
+  "kind": "stream",
+  "model": "C:/Users/lyle/Projects/models/stt/whisper-large-v3-turbo",
+  "backend": "transformers.pipeline",
+  "adapter": {
+    "class": "WhisperForConditionalGeneration",
+    "chunk_length_s": 30,
+    "generate_kwargs": {
+      "language": "en",
+      "task": "transcribe"
+    }
+  },
+  "dtype": "float16",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4060",
+  "torch": "2.11.0+cu128",
+  "transformers": "5.16.1",
+  "python": "3.12.13",
+  "manifest": "manifests\\librispeech-test-clean-200.txt",
+  "manifest_header": "# source=librispeech/test-clean n=200 seed=42 pool=2620",
+  "n": 200,
+  "audio_s": 1561.3,
+  "prefixes": {
+    "first": 1.0,
+    "step": 0.5,
+    "eps": 0.1,
+    "n_prefixes": 2983,
+    "prefix_audio_s": 19408.3
+  },
+  "batching": {
+    "max_items": 8,
+    "max_seconds": 80.0,
+    "order": "one utterance per batch group, longest prefix first"
+  },
+  "conditions": {
+    "clean": {
+      "profile": "clean",
+      "steps": []
+    },
+    "pots_babble10": {
+      "profile": "pots_babble10",
+      "steps": [
+        {
+          "name": "babble",
+          "snr_db": 10.0,
+          "talkers": 6,
+          "source": "other-speaker utterances from the same corpus",
+          "seed": "crc32 of the audio bytes"
+        },
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "bandpass",
+          "lo_hz": 300.0,
+          "hi_hz": 3400.0,
+          "order": 4,
+          "type": "butterworth, causal sosfilt"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    }
+  },
+  "started": "2026-09-09T21:15:09+0800"
+}
