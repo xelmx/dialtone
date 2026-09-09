@@ -9,11 +9,12 @@ necessarily the model that wins on a call, and nobody publishes the gap.
 
 This repo measures it.
 
-## Status: step 3
+## Status: step 4
 
-Three models, one dataset, eight conditions, batch accuracy only. The goal so
-far is a defensible number per model and a degradation chain that has been
-listened to and argued about — not a leaderboard.
+Three models, one dataset, eight conditions for batch accuracy, and a simulated
+streaming measurement (how fast the transcript settles) on two of them. The goal
+is a defensible number per model and a degradation chain that has been listened
+to and argued about — not a leaderboard.
 
 | condition | what it is |
 |---|---|
@@ -166,6 +167,68 @@ uv run dialtone settle results/stream/*/                                  # the 
 
 `scripts/run-settle.ps1` runs alignment, all three models on both conditions, and the
 tables, detached — about 8 hours on an RTX 4060; resumable per (utterance, prefix).
+
+### Results — all 2620 utterances, both conditions
+
+Lags are quantised by the 0.5 s step; read the differences. Revisions are per 100
+final words: the pooled figure (honest, but dominated by a few decoding loops) and
+the per-utterance median (what a typical utterance sees). "Exploded" counts
+partials more than twice the length of the utterance — decoding loops on
+truncated audio. Everything carries a 95% bootstrap interval over utterances;
+paired intervals for the change under the noisy line.
+
+| model | condition | median lag | p90 lag | revisions /100 (median utt) | revisions /100 (pooled) | unstable tail | exploded partials | stream RTF |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Parakeet-TDT-0.6B | clean | 100 ms | 580 ms | **33.3** [31.6, 33.3] | 49.3 | **0.50** | 41 | **0.062** |
+| Parakeet-TDT-0.6B | pots_babble10 | 200 ms | **1200 ms** | 36.0 [33.3, 37.5] | 92.9 | **1.07** | 104 | 0.063 |
+| Qwen3-ASR-0.6B | clean | 140 ms | 420 ms | **5.9** [5.6, 6.2] | 8.8 | **0.10** | 0 | 0.202 |
+| Qwen3-ASR-0.6B | pots_babble10 | 160 ms | 500 ms | 12.5 [11.8, 13.0] | 20.2 | 0.16 | 0 | 0.198 |
+| Whisper-large-v3-turbo | clean | 120 ms | 440 ms | 15.2 [14.3, 15.8] | 22.9 | 0.26 | 9 | 0.366 |
+| Whisper-large-v3-turbo | pots_babble10 | 160 ms | 620 ms | 32.3 [30.8, 33.3] | 45.7 | 0.48 | 13 | 0.361 |
+
+| change under the noisy line (paired) | Δ median lag | Δ p90 lag | Δ revisions (median utt) | Δ unstable tail |
+|---|---:|---:|---:|---:|
+| Parakeet-TDT-0.6B | +100 [+80, +100] ms | **+620 [+540, +700] ms** | +2.7 [+0.0, +5.1] | **+0.57 [+0.41, +0.75]** |
+| Qwen3-ASR-0.6B | +20 [+20, +40] ms | +80 [+80, +100] ms | +6.6 [+5.9, +7.2] | +0.06 [+0.05, +0.06] |
+| Whisper-large-v3-turbo | +40 [+40, +40] ms | +180 [+160, +180] ms | **+17.1 [+15.9, +19.0]** | +0.22 [+0.17, +0.27] |
+
+What the numbers say:
+
+- **Stability ranks the models in the *opposite* order to accuracy and speed.**
+  Qwen3-ASR — the least accurate of the three and the slowest small model — is by
+  far the most stable transcript: 6 revisions per 100 words, a tenth of a word of
+  untrusted tail, and not one decoding loop in 74,000 prefixes. Parakeet — most
+  accurate, most line-robust, 4× faster — takes back its words 5–6× more often
+  (33 per 100), keeps half a word unstable at the cursor, and loops occasionally.
+  Whisper sits between. A language-model decoder waits to commit; a pure acoustic
+  transducer emits the fragment of a half-heard word and repairs it 0.5 s later.
+- **Commit latency is nearly the same for all three.** Median lag after the word
+  ends is 100–140 ms on clean audio — within one step of each other. Parakeet is
+  the quickest to commit *and* the most likely to un-commit: a latency/stability
+  trade-off, quantified.
+- **The noisy line hurts them differently.** Parakeet's p90 lag doubles (580 →
+  1200 ms) and its unstable tail doubles; its loops go 41 → 104 — the pooled
+  revision rate nearly doubles while the median utterance barely changes, i.e. the
+  damage concentrates in a few clips. Whisper's revisions double across the board
+  (15 → 32 per 100, the largest typical-utterance change). Qwen's double too but
+  from a low base (6 → 12.5), still below Parakeet's *clean* figure, with lag
+  essentially unchanged.
+- **Parakeet loops on truncated audio.** `"a little bit of a little bit of a
+  little bit of…"` — 41 of 37,000 clean prefixes, 104 under the noisy line, one
+  reaching 1019 words. Rare, but a system that re-decodes prefixes with this model
+  will occasionally show a caller a runaway transcript. Whisper, whose long-form
+  loops are notorious, produced 9 and 13.
+- **Naive prefix re-decoding is expensive.** 11.7× the audio is decoded; on an RTX
+  4060 that is a real-time factor of 0.06 for Parakeet, 0.20 for Qwen and 0.37 for
+  Whisper — the last barely keeps up with a single call. Native streaming decoders
+  exist to avoid this; the accuracy-and-stability comparison above is what they
+  are being asked to preserve.
+- **Robust to the normaliser.** Under `--normalizer basic` every paired change
+  keeps its sign and its interval excludes zero (`results/stream/settle.basic.md`).
+
+Tables: `results/stream/settle.whisper_en.md`; per-prefix transcripts under
+`results/stream/<model>/`; the 200-utterance development run in
+`results/stream-200/`.
 
 ## Run it
 

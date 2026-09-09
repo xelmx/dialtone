@@ -1,0 +1,166 @@
+{
+  "name": "whisper-turbo",
+  "model": "C:/Users/lyle/Projects/models/stt/whisper-large-v3-turbo",
+  "dtype": "float16",
+  "normalizer": "basic",
+  "prefixes": {
+    "first": 1.0,
+    "step": 0.5,
+    "eps": 0.1,
+    "n_prefixes": 37053,
+    "prefix_audio_s": 227918.0
+  },
+  "aligner": "qwen3-forced-aligner-0.6b",
+  "notes": [],
+  "conditions": {
+    "clean": {
+      "n": 2620,
+      "lag_median_ms": 120.0,
+      "lag_median_ms_ci95": [
+        119.99999999999922,
+        120.0
+      ],
+      "lag_p90_ms": 459.99999999999994,
+      "lag_p90_ms_ci95": [
+        440.0000000000004,
+        460.00000000000085
+      ],
+      "revisions_per_100": 30.27787255013458,
+      "revisions_per_100_ci95": [
+        27.56511883279087,
+        33.39144094922768
+      ],
+      "revisions_per_100_median": 18.181818181818183,
+      "revisions_per_100_median_ci95": [
+        17.391304347826086,
+        19.230769230769234
+      ],
+      "unstable_tail": 0.25786309644817473,
+      "unstable_tail_ci95": [
+        0.2265173236611096,
+        0.29777972525131347
+      ],
+      "agree_before_end_s": 0.34888358778625955,
+      "agree_before_end_s_ci95": [
+        0.3387825858778626,
+        0.35866178435114504
+      ],
+      "agree_frac": 0.04699015241244304,
+      "agree_frac_ci95": [
+        0.04523227290701388,
+        0.0488096743376986
+      ],
+      "stream_rtf": 0.36575585735083643,
+      "stream_rtf_ci95": [
+        0.3599149657452055,
+        0.37197017809562544
+      ],
+      "audio_expansion": 11.71665412327888,
+      "audio_expansion_ci95": [
+        11.328364411606675,
+        12.122744698767606
+      ],
+      "lag_defined_frac": 0.9685545320141021,
+      "lag_defined_frac_ci95": [
+        0.9664059747412721,
+        0.970646277456729
+      ],
+      "empty_partials": 13,
+      "exploded_partials": 9,
+      "max_partial_words": 444,
+      "n_empty_final": 0
+    },
+    "pots_babble10": {
+      "n": 2620,
+      "lag_median_ms": 159.99999999999991,
+      "lag_median_ms_ci95": [
+        159.99999999999991,
+        160.00000000000014
+      ],
+      "lag_p90_ms": 620.0,
+      "lag_p90_ms_ci95": [
+        600.0,
+        639.9999999999999
+      ],
+      "revisions_per_100": 44.303797468354425,
+      "revisions_per_100_ci95": [
+        40.994257371401396,
+        47.87741452785324
+      ],
+      "revisions_per_100_median": 30.0,
+      "revisions_per_100_median_ci95": [
+        28.57142857142857,
+        31.25
+      ],
+      "unstable_tail": 0.44164028693404583,
+      "unstable_tail_ci95": [
+        0.400832286687466,
+        0.4859159810944632
+      ],
+      "agree_before_end_s": 0.3219942748091603,
+      "agree_before_end_s_ci95": [
+        0.3111461354961832,
+        0.33220830152671754
+      ],
+      "agree_frac": 0.04336850622645544,
+      "agree_frac_ci95": [
+        0.04160637877607739,
+        0.04505436441703776
+      ],
+      "stream_rtf": 0.3609000754659559,
+      "stream_rtf_ci95": [
+        0.35525242240484145,
+        0.3670099063836333
+      ],
+      "audio_expansion": 11.71665412327888,
+      "audio_expansion_ci95": [
+        11.328364411606675,
+        12.122744698767606
+      ],
+      "lag_defined_frac": 0.9449072931888486,
+      "lag_defined_frac_ci95": [
+        0.934394241113659,
+        0.9511345166680214
+      ],
+      "empty_partials": 2,
+      "exploded_partials": 14,
+      "max_partial_words": 302,
+      "n_empty_final": 0
+    }
+  },
+  "deltas_vs_clean": {
+    "pots_babble10": {
+      "n": 2620,
+      "lag_median_ms": 39.999999999999915,
+      "lag_median_ms_ci95": [
+        39.999999999999915,
+        40.000000000000924
+      ],
+      "lag_p90_ms": 160.00000000000006,
+      "lag_p90_ms_ci95": [
+        140.00000000000006,
+        179.99999999999994
+      ],
+      "revisions_per_100": 14.025924918219847,
+      "revisions_per_100_ci95": [
+        9.861550110266288,
+        18.16917511991324
+      ],
+      "revisions_per_100_median": 11.818181818181817,
+      "revisions_per_100_median_ci95": [
+        10.62271062271062,
+        13.220940550133097
+      ],
+      "unstable_tail": 0.1837771904858711,
+      "unstable_tail_ci95": [
+        0.1306746372102588,
+        0.23750328150923777
+      ],
+      "agree_before_end_s": -0.026889312977099233,
+      "agree_before_end_s_ci95": [
+        -0.038145467557251934,
+        -0.01591564885496178
+      ]
+    }
+  }
+}

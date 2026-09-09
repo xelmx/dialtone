@@ -1,0 +1,77 @@
+{
+  "dialtone": "0.1.0",
+  "kind": "stream",
+  "model": "Qwen/Qwen3-ASR-0.6B-hf",
+  "backend": "transformers",
+  "adapter": {
+    "class": "Qwen3ASRForConditionalGeneration",
+    "decoding": "greedy",
+    "max_new_tokens": 256,
+    "prompt": "<|im_start|>system\n<|im_end|>\n<|im_start|>user\n<|audio_start|><|audio_pad|><|audio_end|><|im_end|>\n<|im_start|>assistant\n",
+    "language": "auto-detected; prefix stripped"
+  },
+  "dtype": "bfloat16",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4060",
+  "torch": "2.11.0+cu128",
+  "transformers": "5.16.1",
+  "python": "3.12.13",
+  "manifest": "manifests\\librispeech-test-clean-2620.txt",
+  "manifest_header": "# source=librispeech/test-clean n=2620 seed=42 pool=2620",
+  "n": 2620,
+  "audio_s": 19452.5,
+  "prefixes": {
+    "first": 1.0,
+    "step": 0.5,
+    "eps": 0.1,
+    "n_prefixes": 37053,
+    "prefix_audio_s": 227918.0
+  },
+  "batching": {
+    "max_items": 16,
+    "max_seconds": 160.0,
+    "order": "one utterance per batch group, longest prefix first"
+  },
+  "conditions": {
+    "clean": {
+      "profile": "clean",
+      "steps": []
+    },
+    "pots_babble10": {
+      "profile": "pots_babble10",
+      "steps": [
+        {
+          "name": "babble",
+          "snr_db": 10.0,
+          "talkers": 6,
+          "source": "other-speaker utterances from the same corpus",
+          "seed": "crc32 of the audio bytes"
+        },
+        {
+          "name": "narrowband",
+          "from_hz": 16000,
+          "to_hz": 8000,
+          "method": "scipy.signal.resample_poly (Kaiser FIR anti-alias)"
+        },
+        {
+          "name": "bandpass",
+          "lo_hz": 300.0,
+          "hi_hz": 3400.0,
+          "order": 4,
+          "type": "butterworth, causal sosfilt"
+        },
+        {
+          "name": "mulaw",
+          "codec": "ITU-T G.711 mu-law, Sun g711.c algorithm"
+        },
+        {
+          "name": "wideband",
+          "from_hz": 8000,
+          "to_hz": 16000,
+          "method": "scipy.signal.resample_poly"
+        }
+      ]
+    }
+  },
+  "started": "2026-09-09T22:20:03+0800"
+}

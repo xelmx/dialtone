@@ -1,0 +1,166 @@
+{
+  "name": "qwen3-asr-0.6b",
+  "model": "Qwen/Qwen3-ASR-0.6B-hf",
+  "dtype": "bfloat16",
+  "normalizer": "whisper_en",
+  "prefixes": {
+    "first": 1.0,
+    "step": 0.5,
+    "eps": 0.1,
+    "n_prefixes": 37053,
+    "prefix_audio_s": 227918.0
+  },
+  "aligner": "qwen3-forced-aligner-0.6b",
+  "notes": [],
+  "conditions": {
+    "clean": {
+      "n": 2620,
+      "lag_median_ms": 139.9999999999997,
+      "lag_median_ms_ci95": [
+        120.000000000001,
+        139.9999999999997
+      ],
+      "lag_p90_ms": 419.99999999999994,
+      "lag_p90_ms_ci95": [
+        419.99999999999994,
+        419.99999999999994
+      ],
+      "revisions_per_100": 8.759606488037916,
+      "revisions_per_100_ci95": [
+        8.333153676854613,
+        9.211476910370013
+      ],
+      "revisions_per_100_median": 5.88235294117647,
+      "revisions_per_100_median_ci95": [
+        5.555555555555555,
+        6.25
+      ],
+      "unstable_tail": 0.10089158655940522,
+      "unstable_tail_ci95": [
+        0.09737092421228037,
+        0.10423602731548642
+      ],
+      "agree_before_end_s": 0.35535687022900764,
+      "agree_before_end_s_ci95": [
+        0.3470210400763359,
+        0.36408983778625953
+      ],
+      "agree_frac": 0.0478620206780832,
+      "agree_frac_ci95": [
+        0.04632241148422336,
+        0.049515435541806235
+      ],
+      "stream_rtf": 0.20160423760877788,
+      "stream_rtf_ci95": [
+        0.19612292297074052,
+        0.20782631939599902
+      ],
+      "audio_expansion": 11.71665412327888,
+      "audio_expansion_ci95": [
+        11.328364411606675,
+        12.122744698767606
+      ],
+      "lag_defined_frac": 0.9817594743103155,
+      "lag_defined_frac_ci95": [
+        0.9802925183276076,
+        0.9832165693321464
+      ],
+      "empty_partials": 0,
+      "exploded_partials": 0,
+      "max_partial_words": 96,
+      "n_empty_final": 0
+    },
+    "pots_babble10": {
+      "n": 2620,
+      "lag_median_ms": 160.00000000000014,
+      "lag_median_ms_ci95": [
+        160.00000000000014,
+        179.99999999999972
+      ],
+      "lag_p90_ms": 500.0,
+      "lag_p90_ms_ci95": [
+        500.0,
+        519.9999999999995
+      ],
+      "revisions_per_100": 20.167844355617863,
+      "revisions_per_100_ci95": [
+        19.027296244586392,
+        21.5318035606822
+      ],
+      "revisions_per_100_median": 12.5,
+      "revisions_per_100_median_ci95": [
+        11.76470588235294,
+        13.043478260869565
+      ],
+      "unstable_tail": 0.15914965294920572,
+      "unstable_tail_ci95": [
+        0.15352363975857936,
+        0.16462380205602484
+      ],
+      "agree_before_end_s": 0.3104465648854962,
+      "agree_before_end_s_ci95": [
+        0.3008428435114504,
+        0.3203989026717557
+      ],
+      "agree_frac": 0.04181317754856964,
+      "agree_frac_ci95": [
+        0.04021805812839173,
+        0.0434665724874956
+      ],
+      "stream_rtf": 0.19795340748326173,
+      "stream_rtf_ci95": [
+        0.1927634513447044,
+        0.2040694279342126
+      ],
+      "audio_expansion": 11.71665412327888,
+      "audio_expansion_ci95": [
+        11.328364411606675,
+        12.122744698767606
+      ],
+      "lag_defined_frac": 0.9558414003447818,
+      "lag_defined_frac_ci95": [
+        0.9533885580492464,
+        0.9581419988405522
+      ],
+      "empty_partials": 2,
+      "exploded_partials": 0,
+      "max_partial_words": 96,
+      "n_empty_final": 0
+    }
+  },
+  "deltas_vs_clean": {
+    "pots_babble10": {
+      "n": 2620,
+      "lag_median_ms": 20.000000000000455,
+      "lag_median_ms_ci95": [
+        20.000000000000455,
+        40.00000000000003
+      ],
+      "lag_p90_ms": 80.00000000000006,
+      "lag_p90_ms_ci95": [
+        80.00000000000006,
+        99.9999999999996
+      ],
+      "revisions_per_100": 11.408237867579947,
+      "revisions_per_100_ci95": [
+        10.340114622071367,
+        12.75868114385053
+      ],
+      "revisions_per_100_median": 6.61764705882353,
+      "revisions_per_100_median_ci95": [
+        5.88235294117647,
+        7.161125319693094
+      ],
+      "unstable_tail": 0.058258066389800495,
+      "unstable_tail_ci95": [
+        0.05312528473527531,
+        0.06340233900472883
+      ],
+      "agree_before_end_s": -0.044910305343511425,
+      "agree_before_end_s_ci95": [
+        -0.05305801526717562,
+        -0.03671321564885495
+      ]
+    }
+  }
+}
